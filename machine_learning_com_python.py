@@ -180,3 +180,59 @@ plt.title('Interpolação da Reta Sobre Todos os Pontos')
 
 """# 1.2 Estatística em Python"""
 
+
+
+"""# 1.3 Os Primeiros passos em Machine Learning"""
+
+import pandas as pd
+
+df_excel = pd.read_excel("Chess.xlsx", sheet_name = "Chess")
+
+df_csv = pd.read_csv("Tomato.csv", sep = ",")
+
+df_excel.shape
+
+df_csv.shape
+
+df_excel.info()
+
+df_csv.info()
+
+df_csv.tail()
+
+df_excel.tail()
+
+df_excel.describe()
+
+df_csv.describe()
+
+df_excel.describe().T
+
+df_csv.describe().T
+
+df_excel.head()
+
+#visualizar a variaçãos das categorias de dados.
+set(df_excel["victory_status"])
+
+df_csv.head()
+
+# a coluna Average mostra a medida minima e máxima do tomate para a função
+df_csv.describe()
+
+def categorizar_tomate_media(media):
+  if media >= 40 and media <= 70:
+    return "tomate medio"
+  elif media < 40:
+    return "tomate pequeno"
+  else:
+    return "tomatão"
+
+df_csv["Categoria_Tomate"] = df_csv["Average"].apply(categorizar_tomate_media)
+
+df_csv
+
+df_csv.groupby(["Categoria_Tomate"]).describe()
+
+filtro = df_csv["Average"] < 40
+df_csv.loc[filtro]
