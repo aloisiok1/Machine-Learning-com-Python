@@ -236,3 +236,70 @@ df_csv.groupby(["Categoria_Tomate"]).describe()
 
 filtro = df_csv["Average"] < 40
 df_csv.loc[filtro]
+
+"""#1.4 Numpy"""
+
+import numpy as np
+
+arr_list = np.array([1, 2, 3, 4, 5, 6, 7, 8])
+
+print(arr_list)
+
+arr_zeros = np.zeros((4, 6))
+print(arr_zeros)
+
+arr_ones = np.ones((3, 4))
+print(arr_ones)
+
+arr_random = np.random.rand(3, 4)
+print(arr_random)
+
+print(arr_random.shape)
+
+arr_random_reshape = arr_random.reshape((4,3))
+print(arr_random_reshape)
+
+arr1 = np.array([[1,2], [3,4]])
+arr2 = np.array([[5,6], [7,8]])
+arr3 = np.array([[9,10], [11,12]])
+
+arr4 = np.concatenate((arr1, arr2, arr3), axis=1)
+
+arr4
+
+arr4_split = np.split(arr4, 2)
+arr4_split
+
+arr4_transpose = np.transpose(arr4)
+print(arr4_transpose)
+
+arr4_revertido = arr4_transpose.T
+print(arr4_revertido)
+
+arr_a = np.array([1,7,27])
+arr_b = np.array([1,5,1])
+
+arr_a_b = np.add(arr_a, arr_b)
+arr_a_b
+
+arr_sub_a_b = np.subtract(arr_a, arr_b)
+arr_sub_a_b
+
+"""#1.5 MatPlotLib"""
+
+import matplotlib.pyplot as plt
+
+df_csv.head()
+
+df_csv.info()
+
+df_csv["Date"] = pd.to_datetime(df_csv["Date"])
+
+df_csv.info()
+
+plt.plot(df_csv["Date"], df_csv["Average"])
+plt.xlabel("Data")
+plt.ylabel("Média em kilos de Tomates")
+plt.title("Média de Tomates ao Longo do Tempo")
+plt.show()
+
