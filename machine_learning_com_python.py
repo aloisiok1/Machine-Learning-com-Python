@@ -303,3 +303,61 @@ plt.ylabel("Média em kilos de Tomates")
 plt.title("Média de Tomates ao Longo do Tempo")
 plt.show()
 
+df_excel.head()
+
+plt.scatter(df_excel["black_rating"], df_excel["white_rating"])
+plt.xlabel("Black")
+plt.ylabel("White")
+plt.title("Partidas de Peças Brancas e Peças Pretas")
+plt.show()
+
+plt.bar(df_csv["Categoria_Tomate"], df_csv["Average"])
+plt.xlabel("Categorias de Tomates")
+plt.ylabel("Média de Tamanho de Tomates")
+plt.title("Médias de Tomates por Categorias")
+plt.show()
+
+df_excel.groupby(["victory_status"]).mean().plot(kind="pie", y="turns", autopct="%1.0f%%")
+plt.title("Média de Partidas Dentro de Estatus de Vitória")
+plt.show()
+
+"""#1.6 Scikit-Learn"""
+
+df_diabetes = pd.read_csv("/content/diabetes.csv", sep = ",")
+df_diabetes
+
+from sklearn.model_selection import train_test_split
+
+x = df_diabetes.drop(["Class variable"], axis=1)
+
+x
+
+y = df_diabetes["Class variable"]
+
+y
+
+x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.3)
+#30% para teste e o restante para treino
+
+x_train
+#70% para treino
+
+x_test
+#30% para teste
+
+y_train
+#70% para o treino pegando a mesma base para comparação
+
+y_test
+#30% para test pegando a mesma base para comparação
+
+from sklearn.neighbors import KNeighborsClassifier
+
+knn = KNeighborsClassifier(n_neighbors=3)
+
+knn.fit(x_train, y_train)
+
+accuracy = knn.score(x_test, y_test)
+
+accuracy
+
