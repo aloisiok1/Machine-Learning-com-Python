@@ -361,3 +361,63 @@ accuracy = knn.score(x_test, y_test)
 
 accuracy
 
+"""#2 EDA - Exploration Data Analisys"""
+
+df_rs = pd.read_excel("/content/dataset_rolling_stones.xlsx")
+df_rs
+
+print("Data Inicial:", df_rs["release_date"].min())
+
+print("Data Final:", df_rs["release_date"].max())
+
+df_rs.isnull().sum()
+
+df_rs.duplicated().sum()
+
+df_rs[df_rs.duplicated()]
+
+df_rs.describe()
+
+df_rs["duração_em_min"] = df_rs["duration_ms"]/60000
+df_rs
+
+df_rs.describe()
+
+media_por_album = df_rs.groupby("album")["duração_em_min"].mean()
+media_por_album
+
+import matplotlib.pyplot as plt
+
+df_maior_duracao = df_rs.groupby("album")["duração_em_min"].mean().sort_values(ascending=False)
+df_maior_duracao
+
+df_maior_duracao.head(25).plot(kind="bar")
+plt.xlabel("Albuns")
+plt.ylabel("Tempo")
+plt.title("Albuns com maior duração média por musica")
+
+top_albuns = df_rs["album"].value_counts().head(10)
+plt.barh(top_albuns.index, top_albuns.values)
+plt.title("Top 10 albuns com maior número de músicas")
+plt.show()
+
+df_rs.info()
+
+df_rs_ultima_decada = df_rs[df_rs["release_date"].between(pd.to_datetime("2011"), pd.to_datetime("2022"))]
+df_rs_ultima_decada
+
+df_por_album = df_rs_ultima_decada.groupby("album")["popularity"].sum().sort_values(ascending=False).head(10)
+df_por_album
+
+total_popularidade = df_por_album.sum()
+df_porcentagem = df_por_album / total_popularidade*100
+labels = df_porcentagem.index.tolist()
+sizes = df_porcentagem.values.tolist()
+
+figura,grafico = plt.subplots(figsize = (18,6))
+grafico.pie(sizes, autopct = "%1.1f%%")
+grafico.axis('equal')
+plt.title("Porcentagem de Popularidade de albuns na última Década")
+plt.legend(labels, loc="best")
+plt.show()
+
