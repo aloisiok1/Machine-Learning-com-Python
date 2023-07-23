@@ -421,3 +421,152 @@ plt.title("Porcentagem de Popularidade de albuns na última Década")
 plt.legend(labels, loc="best")
 plt.show()
 
+"""#2.1 Outliers"""
+
+import seaborn as sns
+
+sns.set(style = "whitegrid")
+fig, axes = plt.subplots(figsize=(12,6))
+sns.boxplot(x = "duração_em_min", data = df_rs)
+axes.set_title("Boxplot")
+plt.show()
+
+fig, axes = plt.subplots(figsize=(12,6))
+sns.violinplot(x="duração_em_min", data = df_rs, color = "gray")
+axes.set_title("Gráfico de Violino")
+plt.show()
+
+fig, ax = plt.subplots(figsize = (8,6))
+sns.violinplot(x="duração_em_min", data = df_rs, ax=ax, color="lightgray")
+sns.boxplot(x = "duração_em_min", data = df_rs, ax=ax, whis = 1.5, color = "Darkblue")
+ax.set_title("Visualização Violin e Boxplot")
+plt.show()
+
+df_rs.head()
+
+def classifica_musica_aovivo(df_rs):
+  if df_rs["liveness"]>= 0.8:
+    return True
+  else:
+    return False
+
+df_rs["ao_vivo"] = df_rs.apply(classifica_musica_aovivo, axis=1)
+df_rs.head()
+
+df_rs.groupby("ao_vivo")["ao_vivo"].count()
+
+df_gravado_studio = df_rs[df_rs["ao_vivo"]==False]
+df_gravado_aovivo = df_rs[df_rs["ao_vivo"]==True]
+
+print("medias das músicas ao vivo:  ", df_gravado_aovivo["duração_em_min"].mean())
+
+print("medias das múdicas em estudio:  ", df_gravado_studio["duração_em_min"].mean())
+
+fig, ax = plt.subplots(figsize = (8,6))
+sns.violinplot(x="duração_em_min", data = df_gravado_studio, ax=ax, color="lightgray")
+sns.boxplot(x = "duração_em_min", data = df_gravado_studio, ax=ax, whis = 1.5, color = "Darkblue")
+ax.set_title("Visualização Violin e Boxplot")
+plt.show()
+
+fig, ax = plt.subplots(figsize = (8,6))
+sns.violinplot(x="duração_em_min", data = df_gravado_aovivo, ax=ax, color="lightgray")
+sns.boxplot(x = "duração_em_min", data = df_gravado_aovivo, ax=ax, whis = 1.5, color = "Darkblue")
+ax.set_title("Visualização Violin e Boxplot")
+plt.show()
+
+df_studio = df_gravado_studio.groupby("album")["loudness"].sum()
+df_aovivo = df_gravado_aovivo.groupby("album")["loudness"].sum()
+
+fig, axes = plt.subplots(1, 2, figsize=(15,4))
+
+sns.histplot(data = df_studio, bins=20, ax=axes[0])
+axes[0].set_title("Soma do barulho dos albuns de Estudio")
+axes[0].set_xlabel("barulho")
+axes[0].set_ylabel("Frequência")
+
+sns.histplot(data = df_aovivo, bins=20, ax=axes[1])
+axes[1].set_title("Soma do barulho dos albuns de aovivo")
+axes[1].set_xlabel("barulho")
+axes[1].set_ylabel("Frequência")
+
+fig.tight_layout()
+plt.show()
+
+plt.figure(figsize=(10,5))
+
+sns.kdeplot(data=df_studio, label="Albuns de Estudio", fill = True)
+sns.kdeplot(data=df_aovivo, label="Albuns Ao Vivo", fill = True)
+
+plt.title("Distribuição do Barulho dos Albuns")
+plt.xlabel("Barulho")
+plt.ylabel("Densidade")
+plt.legend()
+
+"""#2.2 Testes estatísticos"""
+
+from scipy.stats import shapiro
+
+stat, p = shapiro(df_studio)
+print("Soma do Barulho dos Albuns de Estudio: ")
+print("Estatistica de teste: {:.4f}, valor p: {}".format(stat, p))
+
+if p> 0.05:
+  print("Não há evidencia sufitciente para regeitar a hipotese de normalidade")
+else:
+  print("A hipótese de normalidade é rejeitada")
+
+stat, p = shapiro(df_aovivo)
+print("Soma do Barulho dos Albuns aovivo: ")
+print("Estatistica de teste: {:.4f}, valor p: {}".format(stat, p))
+
+if p> 0.05:
+  print("Não há evidencia sufitciente para regeitar a hipotese de normalidade")
+else:
+  print("A hipótese de normalidade é rejeitada")
+
+from scipy.stats import mannwhitneyu
+
+stat, p = mannwhitneyu(df_studio.sample(len(df_studio)), df_aovivo.sample(len(df_aovivo)), alternative="less")
+
+print("Estatística de teste U: ", stat)
+print("Valor p: ", p)
+
+alpha = 0.05
+if p<alpha:
+  print("Diferença estatísticamente significante")
+else:
+  print("Não há diferença estatisticamente significante")
+
+media_por_album = df_rs.groupby("album")["valence"].mean().reset_index()
+
+media_por_album = media_por_album.rename(columns = {"valence": "media_valence"})
+
+media_por_album["sentimento"] = ["positivo" if v>0.6 else "negativo" for v in media_por_album["media_valence"]]
+
+media_por_album.groupby("sentimento")["sentimento"].count()
+
+df_resultadofinal = pd.merge(df_rs, media_por_album, on="album")
+df_resultadofinal.head()
+
+"""#2.3 Matriz de correlação"""
+
+matriz_correlacao = df_resultadofinal.corr()
+
+correlacao_sentimento = matriz_correlacao["media_valence"]
+
+display(correlacao_sentimento)
+
+sns.heatmap(correlacao_sentimento.to_frame(), annot=True, cmap="coolwarm")
+plt.show()
+
+sns.scatterplot(x="media_valence", y="danceability", hue="sentimento", data=df_resultadofinal, palette="coolwarm")
+plt.xlabel("Media Valence")
+plt.ylabel("Danceability")
+plt.title("Relação entre a Valência média e a capacidade de Dança das Músicas")
+plt.show()
+
+sns.scatterplot(x="media_valence", y="liveness", hue="sentimento", data=df_resultadofinal, palette="coolwarm")
+plt.xlabel("Media Valence")
+plt.ylabel("liveness")
+plt.title("Relação entre a Valência média e Musicas ao vivo")
+plt.show()
