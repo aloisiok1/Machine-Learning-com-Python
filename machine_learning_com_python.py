@@ -570,3 +570,48 @@ plt.xlabel("Media Valence")
 plt.ylabel("liveness")
 plt.title("Relação entre a Valência média e Musicas ao vivo")
 plt.show()
+
+"""#3 Feature Engineering"""
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
+dados = pd.read_csv("/content/data.csv", sep = ",")
+dados.head()
+
+correlation_matrix = dados.corr().round(2)
+
+fig, ax = plt.subplots(figsize=(8,8))
+sns.heatmap(data = correlation_matrix, annot = True, linewidths=.5, ax=ax)
+
+x=dados[["sqft_living", "bathrooms"]].values
+y=dados["price"].values
+
+sns.scatterplot(data=dados, x="sqft_living", y="price")
+
+sns.scatterplot(data=dados, x="bathrooms", y="price")
+
+fig, ax = plt.subplots(figsize=(12,4))
+
+ax.scatter(x[:,0], y);
+ax.scatter(x[:,1], y);
+
+sns.histplot(data=dados, x="sqft_living", kde=True)
+
+sns.histplot(data=dados, x="bathrooms", kde=True)
+
+hist_variaveis = pd.DataFrame(dados, columns=["sqft_living", "bathrooms"])
+hist_variaveis.sqft_living.hist()
+hist_variaveis.bathrooms.hist()
+
+scaler = StandardScaler()
+
+x_std = scaler.fit_transform(x)
+
+x_std = pd.DataFrame(x_std, columns = ["sqft_living", "bathrooms"])
+x_std.sqft_living.hist()
+x_std.bathrooms.hist()
+
