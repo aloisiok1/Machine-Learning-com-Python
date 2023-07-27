@@ -742,7 +742,10 @@ sb.boxplot(x="Semruido", y="Valor", data=imoveis, palette = "hls")
 
 sb.boxplot(x="AV100m", y="Valor", data=imoveis, palette = "hls")
 
-"""# 3.2 Machine Learning"""
+"""# 3.2 Machine Learning
+
+#3.2.1 Regressão Linear
+"""
 
 #regressão linear multipla
 from sklearn.linear_model import LinearRegression
@@ -775,3 +778,60 @@ print("Intercepto: ", lr.intercept_)
 # Os coeficientes da regressão linear representam as inclinações da linha de regressão para cara variavel
 coefficients=pd.concat([pd.DataFrame(x.columns), pd.DataFrame(np.transpose(lr.coef_))], axis=1)
 coefficients
+
+fig=plt.figure(figsize=(8,6), dpi=80)
+plt.rcParams.update({"font.size": 14})
+ax=sb.regplot(x=y_test, y=y_pred)
+ax.set(xlabel="y Real", ylabel= "y predito")
+ax=plt.plot(y_test, y_test, "--r")
+plt.legend
+
+plt.show()
+
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+#Avaliando o modelo
+MAE = mean_absolute_error(y_test, y_pred)
+MSE = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print("MAE: ", MAE) #mean absolute error (MAE) é a medida do valor absoluto dos erros
+print("MSE: ", MSE) #Erro quadrático médio (MSE) é a medida dos error quadráticos
+print("r", r2) #(R-quadrado)
+
+"""#3.2.2 Decision Tree Regressor"""
+
+from sklearn.tree import DecisionTreeRegressor
+
+#criando o modelo Decision Tree Regressor
+model_dtr=DecisionTreeRegressor(random_state=101, max_depth=10)
+model_dtr.fit(x_train, y_train)
+
+y_pred_model_dtr=model_dtr.predict(x_teste)
+
+#avaliando o modelo
+MAE=mean_absolute_error(y_test, y_pred_model_dtr)
+MSE = mean_squared_error(y_test, y_pred_model_dtr)
+r2 = r2_score(y_test, y_pred_model_dtr)
+print("MAE: ", MAE)
+print("MSE: ", MSE)
+print("r2: ", r2)
+
+"""#3.2.2 Avaliando com SVR (Suport Vector Regression)"""
+
+from sklearn.svm import SVR
+
+#criando um modelo de SVR
+svr=SVR(kernel="linear")
+
+svr.fit(x_train, y_train)
+
+y_pred_svr=svr.predict(x_teste)
+
+#avaliando o modelo
+MAE = mean_absolute_error(y_test, y_pred_svr)
+MSE = mean_squared_error(y_test, y_pred_svr)
+r2 = r2_score(y_test, y_pred_svr)
+print("MAE: ", MAE)
+print("MSE: ", MSE)
+print("r2: ", r2)
