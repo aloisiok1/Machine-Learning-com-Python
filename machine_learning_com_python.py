@@ -726,3 +726,52 @@ correlation_matriz = imoveis.corr().round(2)
 fig, ax = plt.subplots(figsize=(8,8))
 sb.heatmap(data=correlation_matriz, annot=True, linewidths=.5, ax=ax)
 
+plt.scatter("Area", "Valor", data=imoveis)
+plt.xlabel("Area em m2")
+plt.ylabel("Valor em R$")
+plt.title("Area do Imóvel x Valor")
+
+plt.scatter("IA", "Valor", data=imoveis)
+plt.xlabel("Idade Aparente")
+plt.ylabel("Valor em R$")
+plt.title("Idade do Imovel x Valor")
+
+sb.boxplot(x="Vista", y="Valor", data=imoveis, palette = "hls")
+
+sb.boxplot(x="Semruido", y="Valor", data=imoveis, palette = "hls")
+
+sb.boxplot(x="AV100m", y="Valor", data=imoveis, palette = "hls")
+
+"""# 3.2 Machine Learning"""
+
+#regressão linear multipla
+from sklearn.linear_model import LinearRegression
+
+#criando um objeto de Regressão Linear
+lr = LinearRegression()
+
+#x contem as variáveis preditoras ou independentes
+x = imoveis[["Area", "Suites", "IA", "Semruido", "Vista", "Andar", "AV100m", "DistBM"]]
+
+#y variável target ou dependente
+y = imoveis[["Valor"]]
+
+from sklearn.model_selection import train_test_split
+
+#serparando os dados de treino e teste
+x_train, x_teste, y_train, y_test = train_test_split(x, y, test_size= 0.2, random_state = 101)
+
+#Treinando o modelo
+lr.fit(x_train, y_train)
+
+# Calculando o valor predito da variável resposta na amostra teste
+y_pred = lr.predict(x_teste)
+
+#primeiro vamos olhar o intercepto e os coeficientes da Regrassão
+#Representa o valor esperado da variável dependente quanto todas as variáveis independentes são iguais
+#Em termos gráficos, o Intercepto é o ponto onde a linha de regressão cruza o eixo vertical (eixoy)
+print("Intercepto: ", lr.intercept_)
+
+# Os coeficientes da regressão linear representam as inclinações da linha de regressão para cara variavel
+coefficients=pd.concat([pd.DataFrame(x.columns), pd.DataFrame(np.transpose(lr.coef_))], axis=1)
+coefficients
