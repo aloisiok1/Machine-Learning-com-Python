@@ -659,3 +659,70 @@ r2 = r2_score(y_test, y_pred_normal)
 print("MAE: ", MAE)
 print("r2: ", r2)
 
+"""#3.1 Modelos de Machine Learning"""
+
+import seaborn as sb
+
+imoveis = pd.read_csv("/content/Valorizacao_Ambiental.csv", sep=";")
+imoveis
+
+imoveis.shape
+
+imoveis.isnull().sum()
+
+imoveis.describe().round(2)
+
+#identificar e estudar a variavel target. "Valor"
+plt.hist(imoveis["Valor"], bins=5)
+
+plt.ylabel("Frequência")
+plt.xlabel("Valor")
+plt.title("Histograma de Variável Valor")
+
+#aplicar raiz quadrada para ampliar a visibilidade dos dados
+imoveis["raiz_valor"] = np.sqrt(imoveis["Valor"])
+imoveis.head()
+
+plt.hist(imoveis["raiz_valor"], bins=5)
+
+plt.ylabel("Frequência")
+plt.xlabel("Valor")
+plt.title("Histograma de Variável Valor")
+
+plt.figure(figsize=(24,20))
+
+plt.subplot(4,2,1)
+fig = imoveis.boxplot(column = "Valor")
+fig.set_title("")
+fig.set_ylabel("Valor em R$")
+
+plt.subplot(4,2,2)
+fig = imoveis.boxplot(column = "Area")
+fig.set_title("")
+fig.set_ylabel("Areas em m2")
+
+plt.subplot(4,2,3)
+fig = imoveis.boxplot(column = "IA")
+fig.set_title("")
+fig.set_ylabel("Idade do Imovel")
+
+plt.subplot(4,2,4)
+fig = imoveis.boxplot(column = "Andar")
+fig.set_title("")
+fig.set_ylabel("Andares no imovel")
+
+plt.subplot(4,2,5)
+fig = imoveis.boxplot(column = "DistBM")
+fig.set_title("")
+fig.set_ylabel("Distância do mar")
+
+plt.subplot(4,2,6)
+fig = imoveis.boxplot(column = "Suites")
+fig.set_title("")
+fig.set_ylabel("Quantidade de Suites")
+
+correlation_matriz = imoveis.corr().round(2)
+
+fig, ax = plt.subplots(figsize=(8,8))
+sb.heatmap(data=correlation_matriz, annot=True, linewidths=.5, ax=ax)
+
