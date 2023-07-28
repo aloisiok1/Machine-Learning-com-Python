@@ -891,3 +891,72 @@ air["Airline"]=LabelEncoder().fit_transform(air["Airline"])
 
 air.head(3)
 
+from sklearn.model_selection import train_test_split
+
+x=air[["Flight", "Time", "Length", "Airline", "AirportFrom", "AirportTo", "DayOfWeek"]]
+y=air["Class"]
+
+x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.3, random_state=7)
+
+"""#3.3.1 Naive Bayes"""
+
+from sklearn.naive_bayes import GaussianNB
+
+gnb = GaussianNB()
+gnb.fit(x_train, y_train)
+
+y_pred = gnb.predict(x_test)
+
+from sklearn.metrics import accuracy_score
+
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy: ", round(accuracy,2))
+
+#equilibrando a base de dados
+from sklearn.utils import resample
+
+#separando as classes majoritarias e minoritarias
+air_majority=air[air.Class == 0]
+air_minority=air[air.Class == 1]
+
+len(air_majority)
+
+len(air_minority)
+
+#upsampling da classe minoritária
+air_minority_upsampled = resample(air_minority, replace=True, n_samples=len(air_majority), random_state=7)
+
+air_equilibrado=pd.concat([air_majority, air_minority_upsampled])
+
+sns.countplot(x="Class", data=air_equilibrado)
+
+air_equilibrado
+
+x_equilibrado = air_equilibrado[["Flight", "Time", "Length", "DayOfWeek"]]
+y_equilibrado = air_equilibrado["Class"]
+
+x_train, x_test, y_train, y_test = train_test_split(x_equilibrado, y_equilibrado, test_size=0.3, stratify=y_equilibrado, random_state=7)
+
+#Treinando o algoritimo
+gnb_equilibrado=GaussianNB()
+gnb_equilibrado.fit(x_train, y_train)
+
+#predizendo valores
+y_pred_gnb_equilibrado = gnb_equilibrado.predict(x_test)
+
+accuracy_equilibrado=accuracy_score(y_test, y_pred_gnb_equilibrado)
+print("Accuracy: ", round(accuracy_equilibrado,2))
+
+from sklearn.ensemble import RandomForestClassifier
+
+x_train, x_test, y_train, y_test = train_test_split(x_equilibrado, y_equilibrado, test_size=0.3, random_state=7)
+
+air1 = RandomForestClassifier(random_state=7)
+
+air1.fit(x_train, y_train)
+
+y_pred_rf = air1.predict(x_test)
+
+accuracy_equilibrado_air1 = accuracy_score(y_test, y_pred_rf)
+print("accuracy: ", round(accuracy_equilibrado_air1, 2))
+
