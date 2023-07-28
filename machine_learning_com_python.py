@@ -835,3 +835,59 @@ r2 = r2_score(y_test, y_pred_svr)
 print("MAE: ", MAE)
 print("MSE: ", MSE)
 print("r2: ", r2)
+
+"""#3.3 Limitações nos modelos"""
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+air = pd.read_csv("/content/airlines.csv", sep=",")
+air
+
+air.shape
+
+air.isnull().sum()
+
+#caso tenha numero nulo execular o comando
+#--> air=air.dropna()
+
+duplicated_cols=[]
+for col in air.columns:
+  if air[col].duplicated().any():
+    duplicated_cols.append(col)
+print(duplicated_cols)
+
+air.describe()
+
+fig,ax=plt.subplots(figsize=(8,6))
+sns.violinplot(x="Length", data=air, ax=ax, color="lightgray")
+sns.boxplot(x="Length", data=air, ax=ax, whis=1.5, color="darkblue")
+ax.set_title("Visualisação Box Plot e Violin Plot")
+plt.show()
+
+sns.violinplot(x="Class", y="Length", data=air)
+plt.show()
+
+atraso_novoo = air.groupby("Class")
+atraso_novoo.describe().T
+
+sns.violinplot(x="Class", y="Time", data=air)
+plt.show()
+
+sns.countplot(x="Airline", hue="Class", data=air)
+
+diasemana = list(range(1,8))
+sns.countplot(x="DayOfWeek", data=air, order=diasemana)
+
+sns.countplot(x="Class", data=air)
+
+from sklearn.preprocessing import LabelEncoder
+
+air["AirportFrom"]=LabelEncoder().fit_transform(air["AirportFrom"])
+air["AirportTo"] = LabelEncoder().fit_transform(air["AirportTo"])
+air["Airline"]=LabelEncoder().fit_transform(air["Airline"])
+
+air.head(3)
+
