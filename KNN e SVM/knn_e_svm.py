@@ -119,3 +119,72 @@ fig, ax = plt.subplots(figsize=(12,12))
 sb.heatmap(data = correlation_matriz, annot=True, linewidths=5, ax=ax)
 # COM informações das colunas com textos alteradas para numericas
 
+x=dados_dummy[["ssc_p", "hsc_p", "degree_p", "workex", "mba_p"]]
+y=dados_dummy["status"]
+
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+
+x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.2, stratify=y, random_state=7)
+
+x_train.shape
+
+y_train.shape
+
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
+scaler = StandardScaler()
+scaler.fit(x_train)
+x_train_scalonado=scaler.transform(x_train)
+x_test_scalonado = scaler.transform(x_test)
+
+x
+
+x_train_scalonado
+
+import numpy as np
+
+"""#1.1 KNN"""
+
+#função para descobrir o melhor K para a melhor precisão para o modelo
+error = []
+for i in range(1,10):
+  knn = KNeighborsClassifier(n_neighbors=i)
+  knn.fit(x_train_scalonado, y_train)
+  pred_i = knn.predict(x_test_scalonado)
+  error.append(np.mean(pred_i!= y_test))
+
+plt.figure(figsize=(12,6))
+plt.plot(range(1,10), error, color="red", linestyle="dashed", marker="o", markerfacecolor="blue", markersize=10)
+plt.title("Erro Médio para K")
+plt.xlabel("Valor de 'K' ")
+plt.ylabel("Erro Médio")
+
+#modfelo com o K escolhido em n_neighborns = 5
+modelo_classificador=KNeighborsClassifier(n_neighbors=5)
+modelo_classificador.fit(x_train_scalonado, y_train)
+y_predito=modelo_classificador.predict(x_test_scalonado)
+
+y_predito
+
+from sklearn.metrics import accuracy_score
+
+print(accuracy_score(y_test, y_predito))
+
+"""#1.2 SVM"""
+
+from sklearn.svm import LinearSVC
+from sklearn.pipeline import Pipeline
+
+svm=Pipeline(
+    [
+        ("linear_svc", LinearSVC(C=1))
+    ]
+)
+
+svm.fit(x_train_scalonado, y_train)
+
+y_predito_svm=svm.predict(x_test_scalonado)
+
+print(accuracy_score(y_test, y_predito_svm))
+
