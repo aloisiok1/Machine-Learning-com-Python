@@ -136,3 +136,11 @@ print(f"Valores Críticos: ")
 for key, value in result_diff[4].items():
   print(f"\t{key}: {value}")
 
+"""#Gerando um DataFrame já com data como datetime64"""
+
+df_path="https://raw.githubusercontent.com/carlosfab/datasets/master/electricity_consumption/Electric_Production.csv"
+df1=pd.read_csv(df_path, parse_dates=[0], index_col="DATE")
+df1.head()
+
+df1.info()
+
